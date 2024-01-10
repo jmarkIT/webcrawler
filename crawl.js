@@ -1,5 +1,4 @@
 const { JSDOM } = require('jsdom')
-const { argv } = require('node:process')
 
 function normalizeURL(url) {
     const fullURL = new URL(url)
@@ -21,14 +20,21 @@ function getURLsFromHTML(htmlBody, baseURL) {
     return linkList
 }
 
-function crawlPage(currentURL) {
+async function crawlPage(currentURL) {
     try {
-        const resp = fetch(currentURL)
-        if (resp.status >= 400 || resp.status < 500) {
-            throw new Error(`Got status code ${resp.status}`)
+        const resp = await fetch(currentURL)
+        const respStatus = resp.status
+        if (respStatus >= 400 && respStatus < 500) {
+            console.log(`Error: Status code ${respStatus}`)
+            return
         }
+        if (!resp.headers.get('content-type').includes('text/html')) {
+            console.log(`Error: This isn't HTML! This is ${resp.headers.get('content-type')}`)
+        }
+        const content = await resp.text()
+        console.log(content)
     } catch (error) {
-
+        console.log(error)
     }
 }
 

@@ -1,4 +1,5 @@
 const { crawlPage } = require('./crawl')
+const { argv } = require('node:process')
 
 function main() {
     /*All your main function should do at this point is:
@@ -16,6 +17,7 @@ function main() {
     }
     const baseURL = argv[2]
     console.log(`Parsing beginning at ${baseURL}`)
+    crawlPage(baseURL)
 }
 
 
