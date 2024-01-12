@@ -1,4 +1,5 @@
 const { crawlPage } = require('./crawl')
+const { printReport } = require('./reports')
 const { argv } = require('node:process')
 
 async function main() {
@@ -18,7 +19,7 @@ async function main() {
     const baseURL = new URL(argv[2])
     console.log(`Parsing beginning at ${baseURL.href}`)
     const pageCounts = await crawlPage(baseURL, baseURL)
-    console.log(pageCounts)
+    printReport(pageCounts)
 }
 
 
