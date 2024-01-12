@@ -14,13 +14,25 @@ function getURLsFromHTML(htmlBody, baseURL) {
         if (link.href[0] !== '/') {
             linkList.push(link.href)
         } else {
-            const expandedURL = `${baseURL}${link.href}`
+            const cleanLink = link.href.replace(/^\//, '')
+            const expandedURL = `${baseURL}${cleanLink}`
             linkList.push(expandedURL)
         }
     return linkList
 }
 
-async function crawlPage(currentURL) {
+async function crawlPage(baseURL, currentURL, pages = []) {
+    if (baseURL.host !== currentURL.host) {
+        return pages
+    }
+    const normalURL = normalizeURL(currentURL.href)
+    if (normalURL in pages) {
+        pages[normalURL]++
+        return pages
+    } else {
+        const normalBaseURL = normalizeURL(baseURL)
+        normalURL === normalBaseURL ? pages[normalBaseURL] = 0 : pages[normalURL] = 1
+    }
     try {
         const resp = await fetch(currentURL)
         const respStatus = resp.status
@@ -31,8 +43,12 @@ async function crawlPage(currentURL) {
         if (!resp.headers.get('content-type').includes('text/html')) {
             console.log(`Error: This isn't HTML! This is ${resp.headers.get('content-type')}`)
         }
-        const content = await resp.text()
-        console.log(content)
+        const body = await resp.text()
+        const urls = getURLsFromHTML(body, baseURL)
+        for (let link of urls) {
+            pages = await crawlPage(baseURL, new URL(link), pages)
+        }
+        return pages
     } catch (error) {
         console.log(error)
     }

@@ -1,7 +1,7 @@
 const { crawlPage } = require('./crawl')
 const { argv } = require('node:process')
 
-function main() {
+async function main() {
     /*All your main function should do at this point is:
     
     If the number of CLI arguments is less than 1, print an error and exit.
@@ -15,9 +15,10 @@ function main() {
         console.log("Error: Please only provide one argument")
         process.exit()
     }
-    const baseURL = argv[2]
-    console.log(`Parsing beginning at ${baseURL}`)
-    crawlPage(baseURL)
+    const baseURL = new URL(argv[2])
+    console.log(`Parsing beginning at ${baseURL.href}`)
+    const pageCounts = await crawlPage(baseURL, baseURL)
+    console.log(pageCounts)
 }
 
 
