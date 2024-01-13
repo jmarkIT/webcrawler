@@ -48,6 +48,7 @@ async function crawlPage(baseURL, currentURL, pages = []) {
         for (let link of urls) {
             pages = await crawlPage(baseURL, new URL(link), pages)
         }
+
         return pages
     } catch (error) {
         console.log(error)
